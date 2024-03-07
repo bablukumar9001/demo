@@ -1,0 +1,426 @@
+<style>
+    .overlay1::before{
+            content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    /*z-index: 2;*/
+    background-color:white;
+    opacity:.3;
+}
+    
+</style>
+
+	<!-- Start .header-section -->
+	<div class="header-section section" id="header" style=" background:url(blogging-gone-viral-camera-concept.jpg);background-repeat:no-repeat;background-size:cover; background-position: center;height:1000px;">
+	    <div class="overlay1"></div>
+
+
+
+	<style>
+	    
+.container1 {
+	position: relative;
+	overflow: hidden;
+	max-width: 100vw;
+	margin: auto;
+}
+
+.slider {
+	display: flex;
+	width: calc(100% * var(--index));
+	transition: transform 0.4s ease-in;
+	transform: translateX(0);
+}
+
+.slider__slide {
+	width: 100%;
+	display: grid;
+	align-items: center;
+	overflow: hidden;
+	position: relative;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: bottom;
+	border-radius: 30px;
+}
+
+/*.slider__slide::before {*/
+/*	content: "";*/
+/*	position: absolute;*/
+/*	inset: 0;*/
+/*	background: radial-gradient(*/
+/*		circle,*/
+/*		rgba(9, 9, 121, 0.5) 27%,*/
+/*		rgba(5, 5, 74, 0.85) 97%*/
+/*	);*/
+/*}*/
+
+.slider__slide__image {
+	width: 100%;
+}
+
+@media only screen and (max-width: 650px) {
+	.slider__slide {
+		grid-template-columns: 1fr;
+		grid-template-rows: repeat(2, 1fr);
+	}
+}
+
+.prev,
+.next,
+.indicators {
+	z-index: 10000;
+	position: absolute;
+}
+
+.prev,
+.next {
+	width: 4rem;
+	cursor: pointer;
+	opacity: 0.2;
+	transition: all 0.3s ease;
+	text-align: center;
+	font-size: 2rem;
+}
+
+.prev:hover,
+.next:hover {
+	opacity: 1;
+}
+
+.prev {
+	top: 50%;
+	left: 2%;
+	transform: translateY(-50%);
+}
+
+.next {
+	top: 50%;
+	right: 2%;
+	transform: translateY(-50%);
+}
+
+.indicators {
+	bottom: 5%;
+	left: 50%;
+	transform: translateX(-50%);
+	display: grid;
+	grid-template-columns: repeat(var(--index), 1fr);
+	gap: 2rem;
+	text-align: center;
+	font-size: 1.5rem;
+	justify-items: center;
+}
+
+.indicators div {
+	background-color: #fff;
+	cursor: pointer;
+	opacity: 0.3;
+	transition: all 0.3s ease;
+	width: 15px;
+	aspect-ratio: 1;
+	border-radius: 50%;
+}
+
+.indicators div:hover {
+	opacity: 0.6;
+}
+
+.active {
+	opacity: 1 !important;
+}
+
+/*.slider__slide__details {*/
+/*	padding: 5rem;*/
+/*	padding-left: 10rem;*/
+/*	z-index: 100;*/
+/*	grid-column: 1 / span 1;*/
+/*	grid-row: 1/-1;*/
+/*	position: absolute;*/
+/*}*/
+
+
+
+
+	</style>
+	
+	<div class="container1">
+		<div class="slider">
+			<!--Slides are created in JS -->
+		</div>
+
+		<!--<div class="navigation prev">&#8592;</div>-->
+		<!--<div class="navigation next">&#8594;</div>-->
+
+		<div class="indicators"></div>
+	</div>
+	<script>
+	    const slides = [
+	{
+		id: 1,
+		image: "https://www.aviorion.in/23.jpg",
+
+	},
+	{
+		id: 2,
+		image: "https://www.aviorion.in/21.jpg",
+
+	},
+	{
+		id: 3,
+		image: "https://www.aviorion.in/11.jpg",
+
+	}
+	
+
+];
+
+const amt = 100 / slides.length;
+const slider = document.querySelector(".slider");
+
+let value = 0;
+let indicatorsValue = 0;
+let interval = 8000;
+
+let indicators;
+let start;
+
+loadSlides();
+
+async function loadSlides() {
+	await createSlides();
+	await createIndicators();
+
+	start = setInterval(() => slide("increase"), interval);
+
+	document.querySelectorAll(".navigation").forEach((cur) => {
+		cur.addEventListener("click", () =>
+			cur.classList.contains("next") ? slide("increase") : slide("decrease")
+		);
+	});
+
+	indicators.forEach((cur) =>
+		cur.addEventListener("click", (ev) => clickCheck(ev))
+	);
+
+	const touchSlide = (() => {
+		let start, move, change, sliderWidth;
+
+		slider.addEventListener("touchstart", (e) => {
+			start = e.touches[0].clientX;
+			sliderWidth = slider.clientWidth / indicators.length;
+		});
+
+		slider.addEventListener("touchmove", (e) => {
+			e.preventDefault();
+			move = e.touches[0].clientX;
+			change = start - move;
+		});
+
+		const mobile = (e) => {
+			change > sliderWidth / 4 ? slide("increase") : null;
+			change * -1 > sliderWidth / 4 ? slide("decrease") : null;
+			[start, move, change, sliderWidth] = [0, 0, 0, 0];
+		};
+		slider.addEventListener("touchend", mobile);
+	})();
+}
+
+//Create slides from JSON object "slides"
+function createSlides() {
+	for (let i = 0; i < slides.length; i++) {
+		const slide = document.createElement("div");
+		slide.classList.add("slider__slide");
+		slide.innerHTML = `<img src="${slides[i].image}" class="slider__slide__image">
+		
+		`;
+		document.querySelector(".slider").appendChild(slide);
+	}
+}
+
+//Create indicators based on the number of slides
+function createIndicators() {
+	for (let i = 0; i < slides.length; i++) {
+		const box = document.createElement("div");
+		box.setAttribute("data-index", i);
+		document.querySelector(".indicators").appendChild(box);
+	}
+	indicators = document.querySelector(".indicators").querySelectorAll("div");
+	indicators[0].classList.add("active");
+	document.querySelector(":root").style.setProperty("--index", slides.length);
+}
+
+// function to transform slide
+function move(S, T) {
+	slider.style.transform = `translateX(-${S}%)`;
+	indicators[T].classList.add("active");
+}
+
+// Check which indicator was clicked
+function clickCheck(e) {
+	clearInterval(start);
+	indicators.forEach((cur) => cur.classList.remove("active"));
+	const check = e.target;
+	check.classList.add("active");
+
+	value = check.getAttribute("data-index") * amt;
+
+	indicatorsUpdate();
+	move(value, indicatorsValue);
+	start = setInterval(() => slide("increase"), interval);
+}
+
+function indicatorsUpdate() {
+	indicatorsValue = value / amt;
+}
+
+function slide(condition) {
+	clearInterval(start);
+	condition === "increase" ? slideIncrease() : slideDecrease();
+	move(value, indicatorsValue);
+	start = setInterval(() => slide("increase"), interval);
+}
+
+function slideIncrease() {
+	indicators.forEach((cur) => cur.classList.remove("active"));
+	value === (document.querySelectorAll(".slider__slide").length - 1) * amt
+		? (value = 0)
+		: (value += amt);
+	indicatorsUpdate();
+}
+
+function slideDecrease() {
+	indicators.forEach((cur) => cur.classList.remove("active"));
+	value === 0
+		? (value = (document.querySelectorAll(".slider__slide").length - 1) * amt)
+		: (value -= amt);
+	indicatorsUpdate();
+}
+
+	</script>
+
+slider
+
+<style>
+/*    *{*/
+/*  margin:0;*/
+/*  padding:0;*/
+/*  box-sizing:border-box;*/
+/*}*/
+@keyframes fade{
+  from{
+    opacity:0.4;
+  }
+  to{
+    opacity:1;
+  }
+}
+
+/*body{*/
+/*  background:#eeeee;*/
+/*}*/
+
+#slider{
+  margin:0 auto;
+  width:100%;
+  overflow:hidden;
+}
+
+.slides{
+  overflow:hidden;
+  animation-name:fade;
+  animation-duration:1s;
+  display:none;
+}
+
+img{
+  width:100%;
+  border-radius:10px;
+}
+
+#dot{
+  margin:0 auto;
+  text-align:center;
+}
+.dot{
+  display:inline-block;
+  border-radius:50%;
+  background:#d3d3d3;
+  padding:8px;
+  margin:10px 5px;
+}
+
+.active1{
+  background:black;
+}
+
+@media (max-width:567px){
+  #slider{
+    width:100%;
+
+  }
+}
+
+#heading{
+  display:block;
+  text-align:center;
+  font-size:2em;
+  margin:10px 0px;
+
+}
+</style>
+
+
+<div id="slider">  
+
+<div class="slides">  
+  <a href="about.php"><img src="11.jpg" width="100%" /></a>
+ </div>
+  
+  <div class="slides">  
+ <a href="contact"> <img src="23.jpg" width="100%" /></a>
+</div>
+  
+  <div class="slides"> 
+  <a href="contact"> 
+  <img src="21.jpg" width="100%" /></a>
+</div> 
+  
+
+  
+  <div id="dot"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+ </div>
+ <script>
+     var index = 0;
+var slides = document.querySelectorAll(".slides");
+var dot = document.querySelectorAll(".dot");
+
+function changeSlide(){
+
+  if(index<0){
+    index = slides.length-1;
+  }
+  
+  if(index>slides.length-1){
+    index = 0;
+  }
+  
+  for(let i=0;i<slides.length;i++){
+    slides[i].style.display = "none";
+    dot[i].classList.remove("active1");
+  }
+  
+  slides[index].style.display= "block";
+  dot[index].classList.add("active1");
+  
+  index++;
+  
+  setTimeout(changeSlide,2000);
+  
+}
+
+changeSlide();
+ </script>
